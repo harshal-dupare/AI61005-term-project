@@ -45,8 +45,8 @@ class problem(object):
 
     def battery_usage_on_path(self,i, path):
         total_battery_usage = 0
-        for i in range(1,len(path)):
-            total_battery_usage+=(self.edge_list[(path[i-1],path[i])]/self.speed[i])*self.discharging_rate[i]
+        for j in range(1,len(path)):
+            total_battery_usage+=(self.edge_list[(path[j-1],path[j])]/self.speed[i])*self.discharging_rate[i]
         return total_battery_usage
 
     def input(self,filename=None):
@@ -126,6 +126,7 @@ class problem(object):
         total_time = []
         for i in range(self.k):
             spath = nx.shortest_path(self.Graphs[i],source=self.source_node[i],target=self.destination_node[i], weight='weight')
+            print(spath)
             b = self.battery_usage_on_path(i,spath)
             traveling_time.append(b/self.discharging_rate[i])
             charging_time.append(max(b-self.initial_battery[i],0)/self.charging_rate[i])
