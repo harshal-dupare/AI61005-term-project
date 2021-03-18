@@ -22,7 +22,7 @@ class problem(object):
         self.graph_made = False
         self.Graphs = []
         self.current_node = []
-
+        
         pass
 
     def __str__(self):
