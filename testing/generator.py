@@ -1,6 +1,7 @@
 import networkx as nx
 import random
 import numpy as np
+from tqdm import tqdm
 
 # generate weigted random connected graph with diff m/n ratios
 # decide number of EVs
@@ -13,7 +14,7 @@ filename = "gen_testcase.txt"
 
 _output_file = open(filename,'w')
 
-min_n, max_n = 3,10
+min_n, max_n = 3,30
 min_w,max_w = 1,100
 n = random.randint(min_n,max_n)
 min_k,max_k = 1,int(n*0.5)
@@ -21,7 +22,9 @@ min_cr,max_cr = 1,max_w*0.1
 min_dcr,max_dcr = 1,max_w*0.1
 min_sp,max_sp = 1,max_w*0.1
 
-G = nx.complete_graph(n)
+G = nx.karate_club_graph()
+
+n = G.number_of_nodes()
 m = G.number_of_edges()
 _output_file.write(str(n)+'\n')
 _output_file.write(str(m)+'\n')
@@ -35,6 +38,8 @@ print("Graph Completed")
 
 k = random.randint(min_k,max_k)
 _output_file.write(str(k)+'\n')    
+
+_output_file.flush()
 
 source_node = list(np.random.choice(list(range(n))+list(range(n)),k,replace=False))
 temp = list(np.random.choice(list(range(n))+list(range(n)),2*n))
@@ -64,12 +69,27 @@ def get_max_weight(path):
 
 iter_count_max_weight = 4
 max_edge_weight = []
-for i in range(k):
-    gpath = list(nx.all_simple_paths(G, source=source_node[i], target=destination_node[i]))
-    ridx = np.random.choice(list(range(len(gpath))),size=min(iter_count_max_weight,len(gpath)),replace=False)
+# for i in range(k):
+#     gpath = list(nx.all_simple_paths(G, source=source_node[i], target=destination_node[i]))
+#     ridx = np.random.choice(list(range(len(gpath))),size=min(iter_count_max_weight,len(gpath)),replace=False)
+#     max_w = -1
+#     for j in ridx:
+#         max_w = max(max_w,get_max_weight(gpath[j]))
+#     max_edge_weight.append(max_w)
+
+
+for i in tqdm(range(k)):
+    titer_count_max_weight = iter_count_max_weight
+    gpath = (nx.all_simple_paths(G, source=source_node[i], target=destination_node[i]))
+    lpath = []
+    for pt in gpath:
+        lpath.append(pt)
+        titer_count_max_weight-=1
+        if titer_count_max_weight==0:
+            break
     max_w = -1
-    for j in ridx:
-        max_w = max(max_w,get_max_weight(gpath[j]))
+    for ipath in lpath:
+        max_w = max(max_w,get_max_weight(ipath))
     max_edge_weight.append(max_w)
 
 print("Max weight Completed")

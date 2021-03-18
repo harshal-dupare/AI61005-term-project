@@ -76,21 +76,22 @@ class CTR(object):
                 
                 charge_complete_time = (min(self.p.max_battery[ev_id]-curr_b,b-curr_b))/self.p.charging_rate[ev_id]
                 if self.node_free_charging[v] == -1:
+                    # print(ev_id,v,len(self.paths),len(self.paths[ev_id]),len(self.time))
                     self.events_heap.append((self.time[ev_id]+charge_complete_time,ev_id,'charging'))
-                    self.node_charging[self.paths[ev_id][v]]=self.time[ev_id]+charge_complete_time
+                    self.node_free_charging[v]=self.time[ev_id]+charge_complete_time
                 else:
                     self.events_heap.append((max(self.time[ev_id],self.node_free_charging[v])+charge_complete_time,ev_id,'charging'))
-                    self.node_free_charging[self.paths[ev_id][v]]=max(self.time[ev_id],self.node_free_charging[v])+charge_complete_time
+                    self.node_free_charging[v]=max(self.time[ev_id],self.node_free_charging[v])+charge_complete_time
             
             heapq.heapify(self.events_heap)
         
 p = problem.problem()
 
-p.input("eg1.txt")
+p.input("gen_testcase.txt")
 
 p.make_graphs()
 
-print(p)
+# print(p)
 
 print(p.theoritical_minima())
 
@@ -100,5 +101,5 @@ sol.run()
 
 print(sol.time)
 
-    
+print(np.max(sol.time))
     
