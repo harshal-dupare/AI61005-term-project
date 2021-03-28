@@ -182,10 +182,23 @@ class CTMR(object):
                             
             heapq.heapify(self.events_heap)
         
-    def _get_charging(self,ev_list):
+    def _get_charging1(self,ev_list):
         if len(ev_list) > 0:
             return [ev_list[0]]
         return []
+
+    def _get_charging(self,ev_list):
+        if len(ev_list) > 0:
+            b_ev = ev_list[0]
+            b_vl =  self.p.battery_usage_on_path(b_ev,self.paths[b_ev][self.at[b_ev]:])
+            for ev in ev_list:
+                tvl = self.p.battery_usage_on_path(ev,self.paths[ev][self.at[ev]:])
+                if tvl > b_vl:
+                    b_ev = ev
+                    b_vl = tvl
+            return [b_ev]         
+        return []
+
 
     def print_paths(self):
         for i in range(self.p.k):
