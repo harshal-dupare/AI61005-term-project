@@ -22,7 +22,12 @@ min_cr,max_cr = 1,max_w*0.1
 min_dcr,max_dcr = 1,max_w*0.1
 min_sp,max_sp = 1,max_w*0.1
 
-G = nx.karate_club_graph()
+while True:
+    # G = nx.erdos_renyi_graph(n, 0.5, seed=random.randint(0,1000), directed=False)
+    # G = nx.karate_club_graph()
+    G = nx.generators.trees.random_tree(n,seed=random.randint(0,1000))
+    if nx.is_connected(G):
+        break
 
 n = G.number_of_nodes()
 m = G.number_of_edges()
