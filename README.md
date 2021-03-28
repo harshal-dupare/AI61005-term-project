@@ -23,9 +23,10 @@ then a randomly generated example will be written to `gen_testcase.txt`, not tha
 
 ```
 python ctr.py
+python ctmr.py
 ```
 
-Note: `ctr.py` assumes that the input in `gen_testcase.txt` has a solution 
+Note: `ctr.py` & `ctmr.py` assumes that the input in `gen_testcase.txt` has a solution 
 
 ### Example
 
@@ -49,5 +50,5 @@ for EV 0 : [(23.09028995352622, 'reached without charging at destination on path
 for EV 1 : [(0, 'started charging at 11'), (9.569532843208096, 'completed charging at 11'), (22.69900776174788, 'reached 14'), (32.4756941358828, 'reached destination on path [14, 15]')]       
 for EV 2 : [(6.09021668782382, 'reached without charging at destination on path [4, 10, 12, 3]')]
 for EV 3 : [(0, 'started charging at 9'), (1.9240183812064784, 'completed charging at 9'), (5.693166485135418, 'reached 13'), (11.478115774784175, 'reached destination on path [13, 14, 7, 0]')]
-for EV 4 : [(3.6185751533339374, 'reached without charging at destination on path [7, 12, 3]')]
+for EV 4 : [(3.6185751533339374, 'reached without charging at destination on path [7, 12, 3]')]a
 ```
