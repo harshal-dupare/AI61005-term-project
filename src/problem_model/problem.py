@@ -126,11 +126,11 @@ class problem(object):
         total_time = []
         for i in range(self.k):
             spath = nx.shortest_path(self.Graphs[i],source=self.source_node[i],target=self.destination_node[i], weight='weight')
-            print(spath)
+            # print(spath)
             b = self.battery_usage_on_path(i,spath)
             traveling_time.append(b/self.discharging_rate[i])
             charging_time.append(max(b-self.initial_battery[i],0)/self.charging_rate[i])
             total_time.append(traveling_time[-1]+charging_time[-1])
-
+        # print(total_time)
         return np.max(np.array(total_time))
 
