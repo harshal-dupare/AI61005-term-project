@@ -498,8 +498,9 @@ def all_possible_combination_of_Events(Events):
 			if need_to_create_new_transformation:
 				new_transformation = copy.copy(transformation)
 				del new_transformation[key]
-				new_transformation[(Event[0],Event[3])] = Event[2]
-				new_transformations.append(new_transformation)
+				if new_transformation not in  new_transformations:
+					new_transformation[(Event[0],Event[3])] = Event[2]
+					new_transformations.append(new_transformation)
 
 			else:
 				transformation[(Event[0],Event[3])] = Event[2]
