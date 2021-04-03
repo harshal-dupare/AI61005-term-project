@@ -178,18 +178,18 @@ class node:
 		last_city_which_is_accessible = [[], -1]
 		for city in adjacent_cities:
 			miniumum_charge_required_to_reach_the_city = Graph_of_cities[self.state_of_EVs[EV][1][0]][city]["weight"] / EVs[EV][4]
-			if time_when_city_is_reachable < next_city_which_is_accessible[1]:
-					next_city_which_is_accessible[0] = [city]
-					next_city_which_is_accessible[1] = time_when_city_is_reachable
-			elif miniumum_charge_required_to_reach_the_city <=self.state_of_EVs[EV][4]:
+			if miniumum_charge_required_to_reach_the_city <=self.state_of_EVs[EV][4]:
 				reachable_cities_with_current_charge.append(city)
 			else:
 				time_when_city_is_reachable = self.time + (miniumum_charge_required_to_reach_the_city - self.state_of_EVs[EV][4])/EVs[EV][3]
-				if time_when_city_is_reachable <=next_city_which_is_accessible[1]:
+				if time_when_city_is_reachable < next_city_which_is_accessible[1]:
+					next_city_which_is_accessible[0] = [city]
+					next_city_which_is_accessible[1] = time_when_city_is_reachable
+				elif time_when_city_is_reachable == next_city_which_is_accessible[1]:
 					next_city_which_is_accessible[0].append(city)
 					next_city_which_is_accessible[1] = time_when_city_is_reachable
 				elif time_when_city_is_reachable > last_city_which_is_accessible[1]:
-					last_city_which_is_accessible = [city, time_when_city_is_reachable]
+					last_city_which_is_accessible = [[city], time_when_city_is_reachable]
 		if next_city_which_is_accessible[1] < time_of_event:
 			time_for_which_vehicle_is_charged = (Graph_of_cities[self.state_of_EVs[EV][1][0]][next_city_which_is_accessible[0][0]]["weight"] / EVs[EV][4] - self.state_of_EVs[EV][4])/EVs[EV][3]
 			time_of_event, case = next_city_which_is_accessible[1], 2
@@ -229,7 +229,7 @@ class node:
 		if time_of_event > smallest_time_for_next_event:
 			return -1, [], -1
 		events = []
-		amount_of_charge_when_the_EV_moves = self.state_of_EVs[EV][4] + (time_of_event - self.time)*EVs[EV][3]
+		amount_of_charge_when_the_EV_moves = self.state_of_EVs[EV][4] + time_for_which_vehicle_is_charged*EVs[EV][3]
 		if case!=5:
 			for city in reachable_cities_with_current_charge:
 				miniumum_charge_required_to_reach_the_city = Graph_of_cities[self.state_of_EVs[EV][1][0]][city]["weight"] / EVs[EV][4]
@@ -656,7 +656,7 @@ def A_star():
 		explored_state_space[parent_node.node_number] = parent_node
 		explored_node_counter = explored_node_counter +1
 
-
+		##choose according to the resources available in your computer
 		if node_counter >= 100000:
 			print("Too many nodes explored")
 			break
