@@ -249,7 +249,7 @@ class node:
 					events.append(event)
 		if case == 1:
 			if time_of_event == next_city_which_is_accessible[1]:
-				return -1, []
+				return -1, [], -1
 
 			return time_of_event, events, 1
 
