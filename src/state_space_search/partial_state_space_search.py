@@ -154,6 +154,7 @@ class node:
 		if self.state_of_EVs[EV][3] == 0:
 			return -1, [], -1
 
+		time_for_which_vehicle_is_charged = 0
 		#case 1
 		time_of_worse_incoming_EV = 1000000000000
 		smallest_time_at_which_an_EV_becomes_worse = 1000000000000
@@ -177,7 +178,10 @@ class node:
 		last_city_which_is_accessible = [[], -1]
 		for city in adjacent_cities:
 			miniumum_charge_required_to_reach_the_city = Graph_of_cities[self.state_of_EVs[EV][1][0]][city]["weight"] / EVs[EV][4]
-			if miniumum_charge_required_to_reach_the_city <=self.state_of_EVs[EV][4]:
+			if time_when_city_is_reachable < next_city_which_is_accessible[1]:
+					next_city_which_is_accessible[0] = [city]
+					next_city_which_is_accessible[1] = time_when_city_is_reachable
+			elif miniumum_charge_required_to_reach_the_city <=self.state_of_EVs[EV][4]:
 				reachable_cities_with_current_charge.append(city)
 			else:
 				time_when_city_is_reachable = self.time + (miniumum_charge_required_to_reach_the_city - self.state_of_EVs[EV][4])/EVs[EV][3]
@@ -187,13 +191,14 @@ class node:
 				elif time_when_city_is_reachable > last_city_which_is_accessible[1]:
 					last_city_which_is_accessible = [city, time_when_city_is_reachable]
 		if next_city_which_is_accessible[1] < time_of_event:
+			time_for_which_vehicle_is_charged = (Graph_of_cities[self.state_of_EVs[EV][1][0]][next_city_which_is_accessible[0][0]]["weight"] / EVs[EV][4] - self.state_of_EVs[EV][4])/EVs[EV][3]
 			time_of_event, case = next_city_which_is_accessible[1], 2
 			reachable_cities_with_current_charge = reachable_cities_with_current_charge + next_city_which_is_accessible[0]
 
 		#case 3
 		time_when_forced_to_move_by_waiting_cars = 1000000000000
 		if next_city_which_is_accessible[0] == last_city_which_is_accessible[0]:
-			if smallest_time_at_which_an_EV_becomes_worse >= last_city_which_is_accessible[1]:
+			if smallest_time_at_which_an_EV_becomes_worse >= last_city_which_is_accessible[1] and smallest_time_at_which_an_EV_becomes_worse >= self.time:
 				time_when_forced_to_move_by_waiting_cars = smallest_time_at_which_an_EV_becomes_worse
 			else:
 				if last_city_which_is_accessible[1] != -1:
@@ -201,11 +206,14 @@ class node:
 				else:
 					time_when_forced_to_move_by_waiting_cars = self.time
 		if time_when_forced_to_move_by_waiting_cars < time_of_event:
+			if time_for_which_vehicle_is_charged == 0:
+				time_for_which_vehicle_is_charged = time_when_forced_to_move_by_waiting_cars - self.time
 			time_of_event, case = time_when_forced_to_move_by_waiting_cars, 3
 
 		#case 4
 		time_when_EV_is_fully_charged = self.time + (EVs[EV][5]-self.state_of_EVs[EV][4])/EVs[EV][3]
 		if time_when_EV_is_fully_charged <= time_of_event:
+			time_for_which_vehicle_is_charged = (EVs[EV][5]-self.state_of_EVs[EV][4])/EVs[EV][3]
 			reachable_cities_with_current_charge = adjacent_cities
 			time_of_event, case = time_when_EV_is_fully_charged, 4
 
@@ -356,7 +364,6 @@ class node:
 		global smallest_time_for_next_event
 		smallest_time_for_next_event = 1000000000000
 		for EV in self.state_of_EVs:
-			group = []
 			if self.node_number != 0:
 				if self.state_of_EVs[EV][4]<self.state_of_EVs[EV][5]:
 
@@ -368,8 +375,6 @@ class node:
 								smallest_time_for_next_event = time_of_event
 						if smallest_time_for_next_event < self.time:
 							return -1
-
-						#moving_to_charging (EV)
 
 						time_of_event, events = self.moving_to_moving (EV)
 						if time_of_event != -1:
@@ -498,8 +503,8 @@ def all_possible_combination_of_Events(Events):
 			if need_to_create_new_transformation:
 				new_transformation = copy.copy(transformation)
 				del new_transformation[key]
+				new_transformation[(Event[0],Event[3])] = Event[2]
 				if new_transformation not in  new_transformations:
-					new_transformation[(Event[0],Event[3])] = Event[2]
 					new_transformations.append(new_transformation)
 
 			else:
